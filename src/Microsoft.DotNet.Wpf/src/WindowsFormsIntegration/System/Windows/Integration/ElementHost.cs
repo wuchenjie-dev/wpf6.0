@@ -961,6 +961,16 @@ namespace System.Windows.Forms.Integration
         private void OnPropertyChangedVisible(object sender, System.EventArgs e)
         {
             OnPropertyChanged("Visible", this.Visible);
+            if (this.Visible){
+                // Propagate visibility to HwndWrapper, if HwndWrapper is not visible
+                int windowStyle = NativeMethodsSetLastError.GetWindowLong(this.HwndSource.Handle, NativeMethods.GWL_STYLE);
+                if((windowStyle & NativeMethods.WS_VISIBLE) != NativeMethods.WS_VISIBLE)
+                {
+                    int flags = NativeMethods.SWP_NOMOVE | NativeMethods.SWP_NOSIZE | NativeMethods.SWP_SHOWWINDOW;
+                    SafeNativeMethods.SetWindowPos(this.HwndSource.Handle, NativeMethods.HWND_TOP, 0, 0, 
+                                                    this.Width, this.Height, flags);
+                }
+            }
         }
 
         // These properties don't have default mappings, but are added in case anyone wants to add them
