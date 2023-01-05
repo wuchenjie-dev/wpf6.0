@@ -1,0 +1,15 @@
+name: .NET Core
+on: [push]
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install Nuget
+      uses: nuget/setup-nuget@v1
+      with:
+        nuget-version: '5.x'
+    - name: Build
+      run: .\build.cmd -pack -ci -configuration Release -prepareMachine /p:Platform=x86
+    - name: Push
+      run: nuget push .\artifacts\packages\Release\NonShipping\*.nupkg -Source https://www.myget.org/F/wuchenjie/api/v2/package -ApiKey 79a3f163-99e8-4622-bcc7-e75a66634be7 -SkipDuplicate -NoSymbols
